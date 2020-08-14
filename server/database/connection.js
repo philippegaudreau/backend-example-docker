@@ -8,6 +8,8 @@ if (DB.username && DB.password) {
     host: DB.host,
     dialect: 'postgres'
   });
+} else {
+  console.log('DB_USERNAME and/or DB_PASSWORD are not defined, skipping db connection')
 }
 
 export default sequelize
