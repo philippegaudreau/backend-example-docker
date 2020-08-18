@@ -1,16 +1,5 @@
-import Sequelize from 'sequelize'
-import sequelize from '../database/connection'
-
-let Message
-
-if (sequelize) {
-  Message = sequelize.define('message', {
-    body: Sequelize.STRING,
-  }, {
-      tablename: 'messages',
-      timestamps: true
-    });
-}
+const sequelize = require('../connection')
+const Message = require('./message')
 
 const promiseWait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const timeout = 3
@@ -40,4 +29,6 @@ const syncDBWithModels = async (sequelize, tries = 5) => {
 
 syncDBWithModels(sequelize)
 
-export default Message
+module.exports = {
+  Message
+}

@@ -1,32 +1,37 @@
-import Message from '../models/message'
-import fs from 'fs'
+const express = require('express')
+const fs = require('fs')
+const models = require('../db/models')
+const router = express.Router()
 
-export const createMessage = async (req, res) => {
-    try {
-        const message = req.body.message || "Empty message"
-        const logString = new Date().toLocaleString() + ": " + message + "\n"
-        fs.appendFileSync('logs.txt', logString);
+router.post('/', async (req, res) => {
+  try {
+    const message = req.body.message || 'Empty message'
+    const logString = new Date().toLocaleString() + ': ' + message + '\n'
+    fs.appendFileSync('logs.txt', logString)
 
-        if (!Message) return res.status(503).send('No database connection')
-        Message.create({
-            body: message
-        })
-        res.sendStatus(201).end()
-    } catch (err) {
-        console.log(err)
-        console.log('Database connection suddenly dropped.')
-        res.sendStatus(500).end()
-    }
-}
+    if (!models.Message.sequelize) return res.status(503).send('[Exercise 2.6+] No database connection')
+    models.Message.create({
+      body: message,
+    })
+    res.sendStatus(201)
+  } catch (err) {
+    console.log(err)
+    console.log('[Exercise 2.6+] Database connection suddenly dropped.')
+    res.sendStatus(500)
+  }
+})
 
-export const getMessages = async (req, res) => {
-    try {
-        if (!Message) return res.status(503).send('No database connection')
-        const messages = await Message.findAll()
-        res.send(messages).end()
-    } catch (err) {
-        console.log(err)
-        console.log('Database connection suddenly dropped.')
-        res.sendStatus(500).end()
-    }
-}
+router.get('/', async (req, res) => {
+  try {
+    if (!models.Message.sequelize) return res.status(503).send('[Exercise 2.6+] No database connection')
+    const messages = await models.Message.findAll()
+    res.send(messages)
+  } catch (err) {
+    console.log(err)
+    console.log('[Exercise 2.6+] Database connection suddenly dropped.')
+    res.sendStatus(500)
+  }
+})
+
+
+module.exports = router
